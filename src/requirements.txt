@@ -1,0 +1,4 @@
+pip
+FastAPI
+uvicorn[standard]
+typer[all]
