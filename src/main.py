@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from typer import Typer, Option
 from typing_extensions import Annotated
 
+from fan.routers.main import router as main_router
+
 
 typer = Typer(
     add_completion         = False,
@@ -14,6 +16,11 @@ typer = Typer(
 
 api = FastAPI(
 
+)
+
+api.include_router(
+    router = main_router,
+    prefix = "/v0",
 )
 
 @typer.callback()

@@ -1,3 +1,6 @@
 # for Python
 __pycache__/
 .python-version
+
+# for Mac
+.DS_Store

@@ -1,4 +1,14 @@
+# for python
 pip
+schedule
+typer[all]
+
+# for API
 FastAPI
 uvicorn[standard]
-typer[all]
+
+# for Monitoring
+prometheus-api-client
+
+# for Raspberry Pi
+RPi.GPIO
