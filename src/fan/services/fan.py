@@ -7,10 +7,10 @@ from fan.services.cluster import service as cluster_service
 # Configuration
 FAN_PIN            = 18     # BCM pin used to drive PWM fan
 PWM_FREQ           = 1000   # [Hz] Noctua PWM control
-REFRESH_TIME       = 10     # [s] Time to wait between each refresh
-DUTY_CYCLE_INITIAL = 33     # [%] Fan speed
+REFRESH_TIME       = 30     # [s] Time to wait between each refresh
+DUTY_CYCLE_INITIAL = 50     # [%] Fan speed
 DUTY_CYCLE_STEP    = 2      # [%] Fan speed step
-TARGET_TEMPERTURE  = 50     # [C] Target temperture 
+
 
 class FanService():
     """Rasberry Pi Fan Controller Service"""
@@ -25,19 +25,7 @@ class FanService():
         self.fan.start(0)
 
         self.duty_cycle        = DUTY_CYCLE_INITIAL
-        self.target_temperture = TARGET_TEMPERTURE
-
-
-    async def get_target_temperture(self):
-        """Returns the target temperture"""
-        return self.target_temperture
-
-
-    async def set_target_temperture(self, temperture: float):
-        """Sets the target temperture"""
-        self.target_temperture = temperture
-        return { "target_temperture": self.target_temperture }
-
+        
 
     async def get_duty_cycle(self):
         """Returns the fan speed"""
@@ -49,9 +37,10 @@ class FanService():
 
         print("Fan is on")
         while self.is_fan_on:
-            current_temperature = cluster_service.get_maximum_temperture()
+            current_temperature = cluster_service.prometheus_maximum_temperture()
+            target = cluster_service.target_temperture
 
-            if current_temperature > self.target_temperture:
+            if current_temperature > target:
                 self.duty_cycle = min(100, self.duty_cycle + DUTY_CYCLE_STEP)
             else:
                 self.duty_cycle = max(0, self.duty_cycle - DUTY_CYCLE_STEP)
@@ -79,7 +68,6 @@ class FanService():
         """Turns the fan off"""
         self.is_fan_on = False
 
-        self.thread.join()
         del self.thread
 
         return { "is_fan_on": self.is_fan_on }
